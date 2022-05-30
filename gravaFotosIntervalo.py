@@ -20,14 +20,20 @@ print('Irá capturar imagens a cada ',segundos,' segundos')
 
 cam = cv2.VideoCapture(0)
 
-playsound('vai_comecar.mp3')
+# Deu um no comando abaixo quando tentei rodar na raspberry, mas pode
+# ser por conta da saída vinculada à porta HDMI (retirando o cabo
+# HDMI talvez funcione). Tem que descomentar para testar
+#playsound('vai_comecar.mp3')
 
-i=10 
+time.sleep(2)
+call(['espeak -vpt-br -k 10 "Vai Começar" 2>/dev/null'], shell=True)     
 
-while i<=30:
+i=1 
+
+while i<=5:
    ret, image = cam.read()
    nome_arquivo='img_'+f"{i:05}"+'.jpg'
-   comando=['espeak -vpt-br "'+str(i)+'" 2>/dev/null']
+   comando=['espeak -vpt-br "Foto '+str(i)+'" 2>/dev/null']
    call(comando, shell=True)     
    print('Salvando ',nome_arquivo)
    cv2.imwrite(nome_arquivo, image)
