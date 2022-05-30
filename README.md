@@ -14,7 +14,7 @@ Exemplo de uso: python gravaFotos.py 30 (bate uma foto a cada 30 segundos)
 - Outras dependências a serem instaladas: 
 
 ```
-pip install opencv-contrib-python playsound
+pip install opencv-contrib-python playsound 
 ```
 
 ### Dicas para começar a usar uma placa Raspberry PI 3 B+

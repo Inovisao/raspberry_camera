@@ -7,7 +7,7 @@ import cv2
 import sys
 import time
 from playsound import playsound
-
+from subprocess import call
 
 if len(sys.argv[1:]) == 0:
    print('Faltou passar a quantidade de segundos como parâmetro')
@@ -20,14 +20,17 @@ print('Irá capturar imagens a cada ',segundos,' segundos')
 
 cam = cv2.VideoCapture(0)
 
-i=1 
+playsound('vai_comecar.mp3')
 
-while i<=10:
+i=10 
+
+while i<=30:
    ret, image = cam.read()
    nome_arquivo='img_'+f"{i:05}"+'.jpg'
+   comando=['espeak -vpt-br "'+str(i)+'" 2>/dev/null']
+   call(comando, shell=True)     
    print('Salvando ',nome_arquivo)
    cv2.imwrite(nome_arquivo, image)
-   playsound('gravei.mp3')
    time.sleep(segundos)
    i=i+1
 	
