@@ -1,7 +1,10 @@
 # gravaFotosInvervalo
 
 Descrição: Capturar imagens a cada X segundos usando uma raspberry PI 3 B+ com uma webcam USB acoplada
-Autor: Hemerson Pistdori (pistori@ucdb.br)
+
+Autor: Hemerson Pistori (pistori@ucdb.br)
+
+Exemplo de uso: python gravaFotos.py 30 (bate uma foto a cada 30 segundos)
 
 ### Dependências 
 
