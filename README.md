@@ -80,4 +80,5 @@ cd ~
 - Para testar a webcam USB eu usei estas dicas aqui:
   https://raspberrypi-guide.github.io/electronics/using-usb-webcams
 - Para acessar a placa Raspberry via ssh (remoto)  
+  https://www.raspberrypi.com/documentation/computers/remote-access.html#set-up-your-local-network
   https://www.raspberrypi.com/documentation/computers/remote-access.html
