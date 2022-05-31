@@ -15,7 +15,7 @@ python gravaFotosIntervalo.py 5 ./meu_video.mp4 # Extrai quadros do vídeo a cad
 ### Dependências 
 
 - Hardware: Raspberry PI 3 B+ 
-- Sistema Operacional: Raspberian 64 bit
+- Sistema Operacional: Raspbian 64 bit
 - Versão do python: 3.9.2
 - Versão do opencv: 4.5.5.64
 - Versão do playsound: 1.3.0
@@ -43,7 +43,7 @@ sudo dpkg -i imager_1.7.2_amd64.deb
 sudo apt-get -f install
 ```
 
-- Execute o rpi-imager e instale o SO Raspberian 64 bit inserindo o cartão SD no slot
+- Execute o rpi-imager e instale o SO Raspbian 64 bit inserindo o cartão SD no slot
 - Altere o arquivo config.txt  dentro do diretório raiz do microSD para resolver problema com  monitor HDMI com "No Signal". Descomente as linhas: 
 
 ```
