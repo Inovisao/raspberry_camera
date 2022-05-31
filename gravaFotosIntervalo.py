@@ -41,9 +41,12 @@ else:
 # HDMI talvez funcione). Tem que descomentar para testar
 #playsound('vai_comecar.mp3')
 
+def fala(frase):
+   comando=['espeak -vpt-br "'+frase+'" 2>/dev/null']
+   call(comando, shell=True)     
+    
 # Executa o programa espeak que lê um texto
-time.sleep(2)
-call(['espeak -vpt-br -k 10 "Vai Vai Começar" 2>/dev/null'], shell=True)     
+fala('Já Vai Começar Parcero')
 
 i=1 
 
@@ -53,18 +56,17 @@ while i<=10:
    ret, image = cam.read()
    if ret==False:
       print('Não conseguiu ler o arquivo ou abrir a webcam')
-      call(['espeak -vpt-br -k 10 "Deu problema na webcam" 2>/dev/null'], shell=True)     
+      fala('Deu problema na câmera')
       exit(0)
    nome_arquivo='img_'+f"{i:05}"+'.jpg'
-   comando=['espeak -vpt-br "Foto '+str(i)+'" 2>/dev/null']
-   call(comando, shell=True)     
+   fala('Foto '+str(i))
    print('Salvando ',nome_arquivo)
    cv2.imwrite(nome_arquivo, image)
    time.sleep(segundos)
    i=i+1
 	
-	
-call(['espeak -vpt-br -k 10 "Ter Terminei" 2>/dev/null'], shell=True)     
+
+fala('Terminei maluco')
 	
 cam.release()
 cv2.destroyAllWindows()
