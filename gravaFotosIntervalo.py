@@ -14,7 +14,7 @@
 import cv2
 import sys
 import time
-from playsound import playsound
+#from playsound import playsound
 from subprocess import call
 
 if len(sys.argv[1:]) == 0:
