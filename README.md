@@ -79,4 +79,5 @@ cd ~
 - Para logar na rede wifi da UCDB, que usa um protocolo de segurança WPA2 diferente do padrão das redes domésticas, usei estas orientações aqui: https://gist.github.com/davidhoness/5ee50e881b63c7944c25b8de33453823
 - Para testar a webcam USB eu usei estas dicas aqui:
   https://raspberrypi-guide.github.io/electronics/using-usb-webcams
-
+- Para acessar a placa Raspberry via ssh (remoto)  
+  https://www.raspberrypi.com/documentation/computers/remote-access.html
