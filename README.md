@@ -75,6 +75,18 @@ python gravaFotosIntervalo.py 3 > saida.txt 2> saida_erro.txt &
 cd ~  
 ```
 
+### Para falar o IP assim que ligar a raspberry 
+
+- Crie um script bash chamado fala_IP.sh com os comandos abaixo
+
+```
+hostname -I | sed 's/\./ponto/g' > ip.txt
+espeak -vpt-br "O meu IP é "
+espeak -vpt-br -f ip.txt
+```
+
+- Altere o .bashrc para chamar este script antes do programa que grava fotos
+
 ### Dicas adicionais
 - Para logar na rede wifi da UCDB, que usa um protocolo de segurança WPA2 diferente do padrão das redes domésticas, usei estas orientações aqui: https://gist.github.com/davidhoness/5ee50e881b63c7944c25b8de33453823
 - Para testar a webcam USB eu usei estas dicas aqui:
