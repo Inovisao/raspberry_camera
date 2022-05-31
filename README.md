@@ -4,7 +4,13 @@ Descrição: Capturar imagens a cada X segundos usando uma raspberry PI 3 B+ com
 
 Autor: Hemerson Pistori (pistori@ucdb.br)
 
-Exemplo de uso: python gravaFotos.py 30 (bate uma foto a cada 30 segundos)
+Exemplos de uso: 
+
+```
+python gravaFotosIntervalo.py 30 # Bate foto a cada 30s usando webcam
+python gravaFotosIntervalo.py 5 ./meu_video.mp4 # Extrai quadros do vídeo a cada 5 segundos
+
+```
 
 ### Dependências 
 
