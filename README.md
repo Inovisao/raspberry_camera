@@ -1,28 +1,29 @@
-# gravaFotosInvervalo
-
-Descrição: Capturar imagens a cada X segundos usando uma raspberry PI 3 B+ com uma webcam USB acoplada
+# programas para rodar no raspberry
 
 Autor: Hemerson Pistori (pistori@ucdb.br)
 
-Exemplos de uso: 
+### gravaFotos.py
 
-```
-python gravaFotosIntervalo.py 30 # Bate foto a cada 30s usando webcam
-python gravaFotosIntervalo.py 5 ./meu_video.mp4 # Extrai quadros do vídeo a cada 5 segundos
+Descrição: Capturar imagens a cada X segundos usando uma raspberry PI 3 B+ com uma webcam USB acoplada
 
-```
+Exemplo de uso: python gravaFotos.py 10 50 (bate 50 fotos em intervalos de 10 segundos)
+
+### ia.py [EM CONSTRUÇÃO !!!]
+
+Descrição: Roda uma IA pré-treinada para reconhecer gente
+
+Exemplo de uso: python ia.py 2 (pega fotos a cada 2 segundos)
 
 ### Dependências 
 
 - Hardware: Raspberry PI 3 B+ 
-- Sistema Operacional: Raspbian 64 bit
+- Sistema Operacional: Raspberian 64 bit
 - Versão do python: 3.9.2
 - Versão do opencv: 4.5.5.64
-- Versão do playsound: 1.3.0
 - Outras dependências a serem instaladas: 
 
 ```
-pip install opencv-contrib-python playsound 
+pip install opencv-contrib-python  
 sudo apt-get install espeak
 ```
 
@@ -43,7 +44,7 @@ sudo dpkg -i imager_1.7.2_amd64.deb
 sudo apt-get -f install
 ```
 
-- Execute o rpi-imager e instale o SO Raspbian 64 bit inserindo o cartão SD no slot
+- Execute o rpi-imager e instale o SO Raspberian 64 bit inserindo o cartão SD no slot
 - Altere o arquivo config.txt  dentro do diretório raiz do microSD para resolver problema com  monitor HDMI com "No Signal". Descomente as linhas: 
 
 ```
@@ -60,37 +61,30 @@ sudo apt-get -f install
 
 - Depois de montar o microSD na sua máquina copie os programas para ele
 - Coloque o microSD de volta na raspberry. Os arquivos que você copiou ficarão na pasta /boot
-- Copie a pasta /boot/raspberry_camera para /home/pi/
-
-```
-cd ~
-sudo cp /boot/raspberry_camera . 
-```
-
-- Altere o arquivo /home/pi/.bashrc para chamar o seu programa. Coloque estes comandos aqui bem no final do arquivo .bashrc  
+- Copie os arquivos que você precisa da pasta boot para a pasta /home/pi/raspberry_camera
+- Altere o arquivo /home/pi/.bashrc para chamar o seu programa. Coloque os comandos abaixo bem no final do arquivo .bashrc  
+- Troque 10 e 50 pelo intervalo em segundo e total de imagens que quer capturar
+- IMPORTANTE: dá também para acessar a pasta /home/pi/ sem precisar colocar o microSD de volta
+  na raspberry. Neste caso, procure por /media/ALGUMA_COISA/rootfs/home/pi (ALGUMA COISA é nome 
+  que você usou na hora de formatar o microSD, no meu caso, usei "pistori"
   
 ```
 cd /home/pi/raspberry_camera/
-python gravaFotosIntervalo.py 3 > saida.txt 2> saida_erro.txt &
+python gravaFotosIntervalo.py 10 50  > saida.txt 2> saida_erro.txt &
 cd ~  
 ```
 
-### Para falar o IP assim que ligar a raspberry 
-
-- Crie um script bash chamado fala_IP.sh com os comandos abaixo
-
-```
-hostname -I | sed 's/\./ponto/g' > ip.txt
-espeak -vpt-br "O meu IP é "
-espeak -vpt-br -f ip.txt
-```
-
-- Altere o .bashrc para chamar este script antes do programa que grava fotos
-
 ### Dicas adicionais
 - Para logar na rede wifi da UCDB, que usa um protocolo de segurança WPA2 diferente do padrão das redes domésticas, usei estas orientações aqui: https://gist.github.com/davidhoness/5ee50e881b63c7944c25b8de33453823
+- Para alterar login altere o arquivo (no microSD) /etc/wpa_supplicant/wpa_supplicant.conf
+- Para alterar a senha, neste mesmo arquivo, você precisa primeiro gerar uma chave hash,
+  por segurança, usando os comandos abaixo (e copiar para o arquivo wpa_supplicant.conf os
+  números gerados, coloque depois de "hash:"
+```  
+  echo -n sua_senha | iconv -t utf16le | openssl md4
+```
+
+  
 - Para testar a webcam USB eu usei estas dicas aqui:
   https://raspberrypi-guide.github.io/electronics/using-usb-webcams
-- Para acessar a placa Raspberry via ssh (remoto)  
-  https://www.raspberrypi.com/documentation/computers/remote-access.html#set-up-your-local-network
-  https://www.raspberrypi.com/documentation/computers/remote-access.html
+

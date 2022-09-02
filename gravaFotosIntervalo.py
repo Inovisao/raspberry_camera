@@ -1,72 +1,41 @@
 # Tira fotos a cada X segundos (X é um parâmetro)
 # Autor: Hemerson Pistori
-#
-# Exemplo de uso: tirar fotos a cada 3 segundos usando a webcam:
-#
-# $ python gravaFotosIntervalo.py 3
-#
-# Exemplo de uso: se não tiver câmera, pode passar como segundo
-#   parâmetro o nome de um arquivo
-#
-# $ python gravaFotosIntervalo.py 3 ./meu_video.mp4
-#
+# Exemplo de uso (tirar 50 fotos em intervalos de 10 segundos):
+# $ python gravaFotosIntervalo.py 10 50
 
 import cv2
 import sys
 import time
-#from playsound import playsound
 from subprocess import call
 
 if len(sys.argv[1:]) == 0:
-   print('Faltou passar a quantidade de segundos como parâmetro')
+   print('Faltou passar a quantidade de segundos como parâmetro e o total de fotos')
    exit(0)
 
-segundos=int(sys.argv[1]) # Pega a quantidade de segundos entre fotos
-nomeArquivoVideo=""
+segundos=int(sys.argv[1])
+total_de_fotos=int(sys.argv[2])
 
-print('Irá capturar imagens a cada ',segundos,' segundos')
+print('Irá capturar',total_de_fotos,'imagens em intervalos de',segundos,'segundos')
 
-if len(sys.argv[1:]) > 1: # Passou um nome de arquivo no segundo parâmetro
-   nomeArquivoVideo=sys.argv[2]
 
-if nomeArquivoVideo=="": # Se não tem nome de arquivo usa a webcam
-   print('Vai ler os quadros da webcam')
-   cam = cv2.VideoCapture(0)
-else:
-   print('Vai ler o quadros de um arquivo de vídeo')
-   cam = cv2.VideoCapture(nomeArquivoVideo)   
+cam = cv2.VideoCapture(0)
 
-# Deu um no comando abaixo quando tentei rodar na raspberry, mas pode
-# ser por conta da saída vinculada à porta HDMI (retirando o cabo
-# HDMI talvez funcione). Tem que descomentar para testar
-#playsound('vai_comecar.mp3')
 
-def fala(frase):
-   comando=['espeak -vpt-br "'+frase+'" 2>/dev/null']
-   call(comando, shell=True)     
-    
-# Executa o programa espeak que lê um texto
-fala('Já Vai Começar Parcero')
+time.sleep(2)
+comando=['espeak -vpt-br "Eu vou tirar '+str(total_de_fotos)+' fotos em intervalos de '+str(segundos)+'segundos" 2>/dev/null']
+call(comando, shell=True)     
 
 i=1 
 
-# Vai tirar 5 fotos e depois parar (troque por True se
-# quiser que não pare nunca)
-while i<=10:
+while i<=total_de_fotos:
    ret, image = cam.read()
-   if ret==False:
-      print('Não conseguiu ler o arquivo ou abrir a webcam')
-      fala('Deu problema na câmera')
-      exit(0)
    nome_arquivo='img_'+f"{i:05}"+'.jpg'
-   fala('Foto '+str(i))
+   comando=['espeak -vpt-br "Foto '+str(i)+'" 2>/dev/null']
+   call(comando, shell=True)     
    print('Salvando ',nome_arquivo)
    cv2.imwrite(nome_arquivo, image)
    time.sleep(segundos)
    i=i+1
-	
-
-fala('Terminei maluco')
 	
 cam.release()
 cv2.destroyAllWindows()
