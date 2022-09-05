@@ -4,11 +4,11 @@ Autor: Hemerson Pistori
 
 Funcionalidade: rodar uma IA no raspberry que reconhece que tem gente na frente da câmera. A IA foi pré-treinada usando o exemplo_pytorch_v4 disponível aqui: http://git.inovisao.ucdb.br/inovisao/exemplos_pytorch
 
-Vai tirar fotos a cada X segundos (X é um parâmetro)
+Vai processar a cada X quadros (X é um parâmetro)
 
 
-Exemplo de uso:
-$ python ia.py 2
+Exemplo de uso (pegando um frame de cada 30):
+$ python ia.py 30
 
 """
 
@@ -29,12 +29,12 @@ if len(sys.argv[1:]) == 0:
    exit(0)
 
 # Pega o intervalo em segundo da linha de comando
-segundos=int(sys.argv[1])
+taxa_de_quadros=int(sys.argv[1])
 
-print('Irá tirar fotos em intervalos de',segundos,'segundos')
+print('Irá processar 1 a cada ',taxa_de_quadros,' quadros')
 
 # Classes do problema 
-classes = ['gente','coisa']
+classes = ['coisa','gente']
 
 # Verifica se tem GPU na máquina, caso contrário, usa a CPU mesmo
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -67,31 +67,32 @@ def classifica_imagem(imagem):
 # Prepara para ler imagens da webcam
 cam = cv2.VideoCapture(0)
 
-#time.sleep(2)  # Espera um pouco para não dar para no comando que será chamado
-#comando=['espeak -vpt-br "Olá, sou uma Inteligência Artificial tosca" 2>/dev/null']
-#call(comando, shell=True)     
+time.sleep(1)  # Espera um pouco para não dar para no comando que será chamado
+comando=['espeak -vpt-br "Olá, sou uma Inteligência Artificial tosca" 2>/dev/null']
+call(comando, shell=True)     
 
-i=1 
-
+quadro=1 
+n_img=1
 while True:
    ret, imagem = cam.read()  # Lê um quadro da webcam
-   imagem = cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB).astype(np.float32)  # Converte de BGR para RGB
-   imagemPIL = Image.fromarray(np.uint8(imagem))  # Converte do formato OpenCV para PIL
+   imagemRGB = cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB).astype(np.float32)  # Converte de BGR para RGB
+   imagemPIL = Image.fromarray(np.uint8(imagemRGB))  # Converte do formato OpenCV para PIL
 
-   classe = classifica_imagem(imagemPIL)  # Vai classificar a imagem (usa o formato PIL)
-   if(classe == "gente"):  # Se for gente, salva a imagem 
-      print('É gente')
-      nome_arquivo='img_'+f"{i:05}"+'.jpg'
-      print('Salvando imagem de gente ',nome_arquivo)
-      cv2.imwrite(nome_arquivo, imagem)
-      i=i+1
-   else:
-      print('Não é gente')
+   if quadro % taxa_de_quadros == 0:
+      print(quadro)
+      classe = classifica_imagem(imagemPIL)  # Vai classificar a imagem (usa o formato PIL)
+      if(classe == "gente"):  # Se for gente, salva a imagem 
+         print('É gente')
+         nome_arquivo='img_'+f"{n_img:05}"+'.jpg'
+         print('Salvando imagem de gente ',nome_arquivo)
+         cv2.imwrite(nome_arquivo, imagem)
+         n_img+=1
+      else:
+         print('Não é gente')
       
-   comando=['espeak -vpt-br "'+classe+'" 2>/dev/null']
-   call(comando, shell=True)     
-   time.sleep(segundos)
-   i=i+1
+      comando=['espeak -vpt-br "'+classe+'" 2>/dev/null']
+      call(comando, shell=True)     
+   quadro+=1
 	
 cam.release()
 cv2.destroyAllWindows()
