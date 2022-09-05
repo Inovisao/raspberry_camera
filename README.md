@@ -23,21 +23,22 @@ Exemplo de uso: python ia.py 2 (pega fotos a cada 2 segundos)
 - Outras dependências a serem instaladas: 
 
 ```
-pip install opencv-contrib-python  
+pip install opencv-contrib-python pytorch torchvision 
 sudo apt-get install espeak
 ```
 
 ### Dicas para começar a usar uma placa Raspberry PI 3 B+
 
 - Arrume um laptop ou computador com leitor de microSD e insira o cartão microSD no leitor
-- Instale o software instalador da Raspberry baixando o arquivo .deb daqui https://www.raspberrypi.com/software e seguindo as instruções. Tem duas formas básicas (veja qual dá certo para você):
-- Usando o snap:
+- Instale o software instalador da Raspberry baixando o arquivo .deb daqui https://www.raspberrypi.com/software e seguindo as instruções. Tem duas formas básicas (veja qual dá certo para você, para mim foi a primeira):
+
+- Usando o snap com rpi-imager:
 
 ```
 snap install rpi-imager
 ```
 
-- Baixando o arquivo .deb e usando o dpkg
+- Baixando o arquivo .deb e usando o dpkg [Assim não deu certo para mim]
 
 ```
 sudo dpkg -i imager_1.7.2_amd64.deb
