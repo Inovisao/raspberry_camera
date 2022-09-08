@@ -6,28 +6,34 @@ Autor: Hemerson Pistori (pistori@ucdb.br)
 
 Descrição: Capturar imagens a cada X segundos usando uma raspberry PI 3 B+ com uma webcam USB acoplada
 
-Exemplo de uso: python gravaFotos.py 10 50 (bate 50 fotos em intervalos de 10 segundos)
+Exemplo de uso: 
 
-### ia.py [EM CONSTRUÇÃO !!!]
+
+```
+# Bate 50 fotos em intervalos de 10 segundos
+python gravaFotos.py 10 50 
+```
+
+### ia.py 
 
 Descrição: Roda uma IA pré-treinada para reconhecer gente
 
-Exemplo de uso: python ia.py 2 (pega fotos a cada 2 segundos)
+Exemplo de uso: 
 
-### Dependências 
+```
+# Processa 1 quadro a cada 30 lidos da webcam
+python ia.py 30 
+```
 
-- Hardware: Raspberry PI 3 B+ 
-- Sistema Operacional: Raspberian 64 bit
+### Versões usadas no teste
+
+- Hardware: Raspberry PI 3 B+ V1.2
+- Sistema Operacional: Raspberry PI OS (64-BIT) - Debian Bullseye 
 - Versão do python: 3.9.2
 - Versão do opencv: 4.5.5.64
-- Outras dependências a serem instaladas: 
 
-```
-pip install opencv-contrib-python pytorch torchvision 
-sudo apt-get install espeak
-```
 
-### Dicas para começar a usar uma placa Raspberry PI 3 B+
+### Instalação do Sistema Operacional na Raspberry PI 3 B+
 
 - Arrume um laptop ou computador com leitor de microSD e insira o cartão microSD no leitor
 - Instale o software instalador da Raspberry baixando o arquivo .deb daqui https://www.raspberrypi.com/software e seguindo as instruções. Tem duas formas básicas (veja qual dá certo para você, para mim foi a primeira):
@@ -45,8 +51,8 @@ sudo dpkg -i imager_1.7.2_amd64.deb
 sudo apt-get -f install
 ```
 
-- Execute o rpi-imager e instale o SO Raspberian 64 bit inserindo o cartão SD no slot
-- Altere o arquivo config.txt  dentro do diretório raiz do microSD para resolver problema com  monitor HDMI com "No Signal". Descomente as linhas: 
+- Execute o rpi-imager e instale o SO sugerido nas dependências (acima) inserindo o cartão SD no slot
+- Altere o arquivo config.txt  dentro do diretório raiz do microSD se der problema com monitor HDMI com "No Signal". Descomente as linhas: 
 
 ```
      hdmi_safe=1
@@ -58,21 +64,59 @@ sudo apt-get -f install
 - Conecte monitor HDMI (na porta HDMI) e teclados e mouse nas portas USB
 - Use um cabo USB-microUSB para ligar a placa Raspberry em uma fonte de energia (pode ser um carregador de celular de 5V e 2A ou uma saída USB do computador). A raspberry tem um único slot microUSB (aquele pequininho de celular) para ligar na energia.
 
+# Instalação das dependências
+
+
+```
+# Programa de leitura de texto (Texto-To-Speech)
+sudo apt-get install espeak
+sudo pip install opencv-contrib-python pytorch torchvision 
+```
+
+- Se der erro de cv2 tenta instalar novamente o opencv
+
+```
+sudo pip install opencv-contrib-python
+```
+
+- Se der erro no pytorch, tenta seguir estas orientações aqui (instalar usando WHEEL):
+https://qengineering.eu/install-pytorch-on-raspberry-pi-4.html. Também coloquei os comandos no script install_torch.sh
+
+```
+./install_torch.sh
+```
+
+
+- Se der erro no numpy com um warning onde aparece um número hexadecimal (E.g.: 0x10), busque neste site o mapa de conversão para saber que versão do numpy deve ser instalada. No meu caso, o erro mostra 0x10 e pelo mapa eu vi que tinha que instalar o numpy 1.23
+
+```
+sudo pip install numpy=1.23
+```
+
+
 ### Para instalar o seu programa em python na raspberry
 
-- Depois de montar o microSD na sua máquina copie os programas para ele
-- Coloque o microSD de volta na raspberry. Os arquivos que você copiou ficarão na pasta /boot
-- Copie os arquivos que você precisa da pasta boot para a pasta /home/pi/raspberry_camera
-- Altere o arquivo /home/pi/.bashrc para chamar o seu programa. Coloque os comandos abaixo bem no final do arquivo .bashrc  
-- Troque 10 e 50 pelo intervalo em segundo e total de imagens que quer capturar
-- IMPORTANTE: dá também para acessar a pasta /home/pi/ sem precisar colocar o microSD de volta
-  na raspberry. Neste caso, procure por /media/ALGUMA_COISA/rootfs/home/pi (ALGUMA COISA é nome 
-  que você usou na hora de formatar o microSD, no meu caso, usei "pistori"
+- Depois de montar o microSD na sua máquina copie os programas para dentro dele
+- O microSD será montado em uma pasta chamada /media/NOME_USUARIO/ (onde NOME_USUARIO depende da sua instalação específica ... geralmente é o seu nome de login)
+- Dentro desta pasta haverá uma chamada rootfs. É nesta que fica todo o sistema de arquivos que te interessa, incluindo a pasta "home".
+- Copie todo o conteúdo de raspberry_camera para home/NOME_USUARIO_RASPBERRY (o padrão é "pi"). Exemplo aqui na minha máquina (meu usuário é pistori e no raspberry eu havia criado um usuário chamado papi):
+
+```
+sudo cp -R raspberry_camera/ /media/pistori/rootfs/home/papi/
+```
+
+- Altere o arquivo /home/NOME_USUARIO_RASPBERRY/.bashrc para chamar o seu programa. Coloque os comandos abaixo bem no final do arquivo .bashrc  (troque papi pelo nome correto da pasta)
   
 ```
-cd /home/pi/raspberry_camera/
-python gravaFotosIntervalo.py 10 50  > saida.txt 2> saida_erro.txt &
-cd ~  
+cd /home/papi/raspberry_camera/
+sleep 2
+# Vai falar o IP da máquina, caso tenha conseguido conectar
+# em alguma rede. Com isso, dá para logar no raspberry
+# via ssh
+./fala_IP.sh
+# Roda a IA processamento 1 a cada 30 quadros
+python ia.py 30 > saida.txt 2> saida_erro.txt &
+cd ~
 ```
 
 ### Dicas adicionais
@@ -83,9 +127,18 @@ cd ~
   números gerados, coloque depois de "hash:"
 ```  
   echo -n sua_senha | iconv -t utf16le | openssl md4
+  # Para reconfigurar a rede:
+  wpa_cli -i wlan0 reconfigure
+  # Para limpar sua senha do histórico
+  history -c
+  rm ~/.bash_history
 ```
-
   
 - Para testar a webcam USB eu usei estas dicas aqui:
   https://raspberrypi-guide.github.io/electronics/using-usb-webcams
+  
+
+
+
+ 
 
