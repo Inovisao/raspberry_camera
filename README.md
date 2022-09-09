@@ -109,7 +109,9 @@ sudo cp -R raspberry_camera/ /media/pistori/rootfs/home/papi/
   
 ```
 cd /home/papi/raspberry_camera/
-sleep 2
+# Tem que esperar alguns segundos para que a conexão com a rede se estabeleça.
+# Caso contrário, não vai ter IP para poder falar. 
+sleep 6
 # Vai falar o IP da máquina, caso tenha conseguido conectar
 # em alguma rede. Com isso, dá para logar no raspberry
 # via ssh
