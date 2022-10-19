@@ -68,7 +68,7 @@ def classifica_imagem(imagem):
 cam = cv2.VideoCapture(0)
 
 time.sleep(1)  # Espera um pouco para não dar para no comando que será chamado
-comando=['espeak -vpt-br "Olá, sou uma Inteligência Artificial tosca" 2>/dev/null']
+comando=['espeak -vpt-br "Olá, sou uma Inteligência Artificial. Bem-vindos ao país U C D B" 2>/dev/null']
 call(comando, shell=True)     
 
 quadro=1 
