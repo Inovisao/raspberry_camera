@@ -101,7 +101,7 @@ cam = cv2.VideoCapture(0)
 parametros_fala='-s 200 -p 10 -v brazil'
 
 time.sleep(1)  # Espera um pouco para não dar para no comando que será chamado
-comando=['espeak '+parametros_fala+' "Olá, sou uma   IA" 2>/dev/null']
+comando=['espeak '+parametros_fala+' "Olá, eu busco percevejos" 2>/dev/null']
 call(comando, shell=True)     
 
 quadro=1 
@@ -116,7 +116,7 @@ while True:
       print(f'marrons: {marrons}, verdes: {verdes}')
 
       if marrons==0 and verdes==0:
-         comando=['espeak '+parametros_fala+'"Não vejo percevejos" 2>/dev/null']
+         comando=['espeak '+parametros_fala+' "Não vejo percevejos" 2>/dev/null']
       if marrons>0 and verdes==0:
          comando=['espeak '+parametros_fala+' "Vejo '+str(marrons)+' percevejos marrons" 2>/dev/null']  
       if marrons==0 and verdes>0:
