@@ -17,7 +17,6 @@ import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.ops import nms
 import cv2
-from PIL import Image
 import sys
 import time
 import numpy as np
@@ -94,7 +93,7 @@ def detecta_insetos(image):
                 elif class_name == 'marrom':
                     marrons += 1
 
-    return verdes, marrons
+    return marrons, verdes
 
 # Prepara para ler imagens da webcam
 cam = cv2.VideoCapture(0)
@@ -110,11 +109,11 @@ n_img=1
 while True:
    ret, imagem = cam.read()  # Lê um quadro da webcam
    imagemRGB = cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB).astype(np.float32)  # Converte de BGR para RGB
-   imagemPIL = Image.fromarray(np.uint8(imagemRGB))  # Converte do formato OpenCV para PIL
 
    if quadro % taxa_de_quadros == 0:
       print(quadro)
-      marrons, verdes = detecta_insetos(imagemPIL)  # Vai classificar a imagem (usa o formato PIL)
+      marrons, verdes = detecta_insetos(imagemRGB)  # Vai classificar a imagem (usa o formato PIL)
+      print(f'marrons: {marrons}, verdes: {verdes}')
 
       if marrons==0 and verdes==0:
          comando=['espeak '+parametros_fala+'"Não vejo percevejos" 2>/dev/null']
