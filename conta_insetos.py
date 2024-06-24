@@ -1,6 +1,6 @@
 """
 
-Autor: Hemerson Pistori
+Autores: Hemerson Pistori, João Porto
 
 Funcionalidade: rodar uma IA no raspberry que reconhece que tem gente na frente da câmera. A IA foi pré-treinada usando o exemplo_pytorch_v4 disponível aqui: http://git.inovisao.ucdb.br/inovisao/exemplos_pytorch
 
@@ -13,10 +13,9 @@ $ python ia.py 30
 """
 
 import torch 
-from torch import nn  # Módulo para redes neurais (neural networks)
-import torchvision.transforms as transforms
-from torchvision import models
-import os
+import torchvision
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+from torchvision.ops import nms
 import cv2
 from PIL import Image
 import sys
@@ -37,29 +36,65 @@ print('Irá processar 1 a cada ',taxa_de_quadros,' quadros')
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Usando {device}")
 
-
-#model = models.resnet18(pretrained=True) # Avisa que é uma resnet18 pré-treinada
-#model.fc = nn.Linear(512, len(classes)) # Muda a última camada da rede para 2 classes de saída apenas 
-#model.to(device)  # Ajusta para o dispositivo (CPU ou GPU)
-#model.load_state_dict(torch.load('./modelo_treinado_resnet.pth', map_location=device)) # Carrega os pesos
-
-
 # Função que detecta os insetos na imagem
-def detecta_insetos(imagem):
+CLASSES = [
+    '_background_',  # Background class
+    'marrom',        # Brown insect class
+    'verde'          # Green insect class
+]
 
-  conta_marrom=2
-  conta_verde=3
+# Define model and load pre-trained weights
+model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+in_features = model.roi_heads.box_predictor.cls_score.in_features
+model.roi_heads.box_predictor = FastRCNNPredictor(in_features, len(CLASSES))
+model_path = 'modelo_treinado_faster.pth'  # Path to your trained model
+model.load_state_dict(torch.load(model_path, map_location=device))
+model.to(device).eval()
 
-  # TEM QUE TROCAR ESTA PARTE DE BAIXO PELA FASTER R-CNN 
-  #model.eval() # Avisa que a rede está no modo de "uso" e não de "aprendizagem"
-  #transform = transforms.Compose([transforms.Resize((224,224)),  
-  #                              transforms.ToTensor()
-  #                          ])
+# Define thresholds
+threshold = 0.75
+iou_threshold = 0.5
 
-  #imagem = transform(imagem).to(device).unsqueeze(0) # Ajusta para o formato que a rede precisa
-  #predicao = model(imagem).argmax(dim=1).cpu().tolist()  # Realiza a classificação
-  
-  return conta_marrom,conta_verde
+def detecta_insetos(image):
+    # Preprocess the image
+    image = image.astype(np.float32) / 255.0
+    image = np.transpose(image, (2, 0, 1)).astype(np.float32)
+    image = torch.tensor(image, dtype=torch.float).to(device)
+    image = torch.unsqueeze(image, 0)
+
+    # Get the predictions
+    with torch.no_grad():
+        results = model(image)
+
+    results = [{k: v.to('cpu') for k, v in t.items()} for t in results]
+
+    # Apply Non-Maximum Suppression
+    for result in results:
+        boxes = result['boxes']
+        scores = result['scores']
+        labels = result['labels']
+
+        keep = nms(boxes, scores, iou_threshold)
+
+        result['boxes'] = boxes[keep]
+        result['scores'] = scores[keep]
+        result['labels'] = labels[keep]
+
+    # Count the number of detections for 'verde' and 'marrom' with score >= threshold
+    verdes = 0
+    marrons = 0
+    for result in results:
+        labels = result['labels'].numpy()
+        scores = result['scores'].numpy()
+        for label, score in zip(labels, scores):
+            if score >= threshold:
+                class_name = CLASSES[label]
+                if class_name == 'verde':
+                    verdes += 1
+                elif class_name == 'marrom':
+                    marrons += 1
+
+    return verdes, marrons
 
 # Prepara para ler imagens da webcam
 cam = cv2.VideoCapture(0)
@@ -86,12 +121,18 @@ while True:
       if marrons>0 and verdes==0:
          comando=['espeak '+parametros_fala+' "Vejo '+str(marrons)+' percevejos marrons" 2>/dev/null']  
       if marrons==0 and verdes>0:
-         comando=['espeak '+parametros_fala+' "Vejo '+str(verdes)+'" percevejos verdes" 2>/dev/null']
+         comando=['espeak '+parametros_fala+' "Vejo '+str(verdes)+' percevejos verdes" 2>/dev/null']
       if marrons>0 and verdes>0:
          comando=['espeak '+parametros_fala+' "Vejo '+str(marrons)+' percevejos marrons e '+str(verdes)+' verdes" 2>/dev/null']
       
       call(comando, shell=True)     
-   quadro+=1
+
+   quadro += 1
+
+   # Verifica se a tecla 'q' ou 'Esc' foi pressionada para sair
+   key = cv2.waitKey(1) & 0xFF
+   if key == ord('q') or key == 27:  # 'q' or 'Esc'
+       break
 	
 cam.release()
 cv2.destroyAllWindows()
