@@ -47,8 +47,8 @@ print(f"Usando {device}")
 # Função que detecta os insetos na imagem
 def detecta_insetos(imagem):
 
-  conta_marrom=5
-  conta_verde=4
+  conta_marrom=2
+  conta_verde=3
 
   # TEM QUE TROCAR ESTA PARTE DE BAIXO PELA FASTER R-CNN 
   #model.eval() # Avisa que a rede está no modo de "uso" e não de "aprendizagem"
