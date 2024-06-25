@@ -108,7 +108,7 @@ def fala(texto):
    # USANDO GTTS
    tts = gTTS(texto, lang="pt")
    tts.save("audio.mp3")
-   os.system('ffplay -autoexit -nodisp audio.mp3')
+   os.system('ffplay -af "atempo=1.5" -autoexit -nodisp audio.mp3')
 
 # Prepara para ler imagens da webcam
 cam = cv2.VideoCapture(0)
