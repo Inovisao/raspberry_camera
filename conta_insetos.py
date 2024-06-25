@@ -21,6 +21,8 @@ import sys
 import time
 import numpy as np
 from subprocess import call
+from gtts import gTTS
+import os
 
 if len(sys.argv[1:]) == 0:
    print('Faltou passar a quantidade de segundos entre cada foto que será tirada')
@@ -96,9 +98,17 @@ def detecta_insetos(image):
     return marrons, verdes
 
 def fala(texto):
-   parametros_fala='-s 200 -p 10 -v brazil'
-   comando=['espeak '+parametros_fala+' "'+texto+'" 2>/dev/null']
-   call(comando, shell=True)
+   ## Se não tiver funcionando com gtts, descomente este trecho e comente o de baixo
+
+   # USANDO ESPEAK
+   # parametros_fala='-s 200 -p 10 -v brazil'
+   # comando=['espeak '+parametros_fala+' "'+texto+'" 2>/dev/null']
+   # call(comando, shell=True)
+
+   # USANDO GTTS
+   tts = gTTS(texto, lang="pt")
+   tts.save("audio.mp3")
+   os.system('ffplay -autoexit -nodisp audio.mp3')
 
 # Prepara para ler imagens da webcam
 cam = cv2.VideoCapture(0)
