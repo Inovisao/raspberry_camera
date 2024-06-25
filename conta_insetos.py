@@ -95,14 +95,18 @@ def detecta_insetos(image):
 
     return marrons, verdes
 
+def fala(texto):
+   parametros_fala='-s 200 -p 10 -v brazil'
+   comando=['espeak '+parametros_fala+' "'+texto+'" 2>/dev/null']
+   call(comando, shell=True)
+
 # Prepara para ler imagens da webcam
 cam = cv2.VideoCapture(0)
 
-parametros_fala='-s 200 -p 10 -v brazil'
-
 time.sleep(1)  # Espera um pouco para não dar para no comando que será chamado
-comando=['espeak '+parametros_fala+' "Olá, eu busco percevejos" 2>/dev/null']
-call(comando, shell=True)     
+
+fala('Olá, eu busco percevejos')
+
 
 quadro=1 
 n_img=1
@@ -111,21 +115,32 @@ while True:
    imagemRGB = cv2.cvtColor(imagem, cv2.COLOR_BGR2RGB).astype(np.float32)  # Converte de BGR para RGB
 
    if quadro % taxa_de_quadros == 0:
-      print(quadro)
       marrons, verdes = detecta_insetos(imagemRGB)  # Vai classificar a imagem (usa o formato PIL)
       print(f'marrons: {marrons}, verdes: {verdes}')
 
       if marrons==0 and verdes==0:
-         comando=['espeak '+parametros_fala+' "Não vejo percevejos" 2>/dev/null']
+         fala('Não vejo percevejos')
       if marrons>0 and verdes==0:
-         comando=['espeak '+parametros_fala+' "Vejo '+str(marrons)+' percevejos marrons" 2>/dev/null']  
+         if marrons==1:
+            fala('Vejo um percevejo marrom')
+         else:
+            fala('Vejo '+str(marrons)+' percevejos marrons')
       if marrons==0 and verdes>0:
-         comando=['espeak '+parametros_fala+' "Vejo '+str(verdes)+' percevejos verdes" 2>/dev/null']
+         if verdes==1:
+            fala('Vejo um percevejo verde')
+         else:
+            fala('Vejo '+str(verdes)+' percevejos verdes')
       if marrons>0 and verdes>0:
-         comando=['espeak '+parametros_fala+' "Vejo '+str(marrons)+' percevejos marrons e '+str(verdes)+' verdes" 2>/dev/null']
-      
-      call(comando, shell=True)     
+         if marrons==1 and verdes==1:
+            fala('Vejo um percevejo marrom e um percevejo verde')
+         elif marrons==1 and verdes>1:
+            fala('Vejo um percevejo marrom e '+str(verdes)+' percevejos verdes')
+         elif marrons>1 and verdes==1:
+            fala('Vejo '+str(marrons)+' percevejos marrons e um percevejo verde')
+         else:
+            fala('Vejo '+str(marrons)+' percevejos marrons e '+str(verdes)+' percevejos verdes')
 
+      
    quadro += 1
 
    # Verifica se a tecla 'q' ou 'Esc' foi pressionada para sair
