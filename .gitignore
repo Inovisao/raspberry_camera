@@ -1,0 +1,8 @@
+# Ignorar arquivos de log
+*.log
+
+# Ignorar um arquivo específico (um pacote do Torch)
+torch-1.12.0a0+git67ece03-cp39-cp39-linux_aarch64.whl
+
+# Ignorar arquivos de áudio MP3
+*.mp3
