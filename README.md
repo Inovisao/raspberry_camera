@@ -1,146 +1,49 @@
-# programas para rodar no raspberry
+# Como utilizar a raspberry 5
 
-Autor: Hemerson Pistori (pistori@ucdb.br)
+* Instalar o RPI-Imager;
+no terminal use o comando 
 
-### gravaFotos.py
-
-Descrição: Capturar imagens a cada X segundos usando uma raspberry PI 3 B+ com uma webcam USB acoplada
-
-Exemplo de uso: 
-
-
-```
-# Bate 50 fotos em intervalos de 10 segundos
-python gravaFotos.py 10 50 
+```bash 
+sudo apt install rpi-imager
 ```
 
-### ia.py 
+* Conectar na máquina um cartão SD;
 
-Descrição: Roda uma IA pré-treinada para reconhecer gente
-
-Exemplo de uso: 
-
+* Executar no Terminal:
+```bash 
+sudo rpi-imager
 ```
-# Processa 1 quadro a cada 30 lidos da webcam
-python ia.py 30 
-```
+Selecione o S.O próprio da raspberry de 64bits, escolha aonde o cartão SD na aba storage e então clique em "Write";
+Após a instalação, retire o cartão SD da máquina e insira-o no slot da raspberry(normalmente localizado na parte inferior da placa).
 
-### Versões usadas no teste
+## Preparatório para ligar a Raspberry pi 5
 
-- Hardware: Raspberry PI 3 B+ V1.2
-- Sistema Operacional: Raspberry PI OS (64-BIT) - Debian Bullseye 
-- Versão do python: 3.9.2
-- Versão do opencv: 4.5.5.64
+Tenha em mãos uma fonte de energia com voltagem minima de 5V/3A e máxima de 5V/5A.
+Na primeira iniciação da raspberry é preciso que você conecte-a a um monitor, teclado e mouse. para fazer as configurações do SSH inicial.
 
+### Ligando a Raspberry
 
-### Instalação do Sistema Operacional na Raspberry PI 3 B+
+Conecte a fonte, o cartão SD, o cabo micro-usb/HDMI, um cabo de rede e os periféricos na placa, então conecte o lado hdmi do cabo em um monitor, e assim você estará pronto para iniciar as configurações.
 
-- Arrume um laptop ou computador com leitor de microSD e insira o cartão microSD no leitor
-- Instale o software instalador da Raspberry baixando o arquivo .deb daqui https://www.raspberrypi.com/software e seguindo as instruções. Tem duas formas básicas (veja qual dá certo para você, para mim foi a primeira):
+#### Configurando
 
-- Usando o snap com rpi-imager:
-
-```
-snap install rpi-imager
-```
-
-- Baixando o arquivo .deb e usando o dpkg [Assim não deu certo para mim]
-
-```
-sudo dpkg -i imager_1.7.2_amd64.deb
-sudo apt-get -f install
+Agora com tudo funcionando, quando você ligar a raspberry será apresentado para você uma tela de configuração, aonde escolherá o nome de usuário, senha, rede wifi, e idioma. Faça as devidas configurações e você estará pronto para prosseguir.
+Na tela inicial pressiona as teclas **CTRL** + **ALT** + **T**, ou utilize o menu suspenso para abrir o terminal.
+com o terminal aberto você deve executar os seguintes comandos nessa ordem:
+```bash
+sudo apt install openssh-server # para instalar o ssh caso esteja instalado já, será para atualizar.
+sudo service ssh status # para verificar se o ssh está funcionando na maquina.
+sudo systemctl enable ssh # para permitir que o serviço SSH seja iniciado automaticamente na inicialização do sistema. 
+sudo systemctl start ssh # para iniciar o serviço SSH imediatamente.
 ```
 
-- Execute o rpi-imager e instale o SO sugerido nas dependências (acima) inserindo o cartão SD no slot
-- Altere o arquivo config.txt  dentro do diretório raiz do microSD se der problema com monitor HDMI com "No Signal". Descomente as linhas: 
+### Configurações adicionais 
+Agora utilizaremos o menu de configuração do raspberry, utilize o seguinte comando:
 
+```bash
+sudo raspi-config
 ```
-     hdmi_safe=1
-     hdmi_force_hotplug=1
-```
-
-   
-- Tire o cartão da máquina e coloque no slot do raspberry (fica na parte de baixo da placa)
-- Conecte monitor HDMI (na porta HDMI) e teclados e mouse nas portas USB
-- Use um cabo USB-microUSB para ligar a placa Raspberry em uma fonte de energia (pode ser um carregador de celular de 5V e 2A ou uma saída USB do computador). A raspberry tem um único slot microUSB (aquele pequininho de celular) para ligar na energia.
-
-# Instalação das dependências
+irá abrir a seguinte tela:
 
 
-```
-# Programa de leitura de texto (Texto-To-Speech)
-sudo apt-get install espeak
-sudo pip install opencv-contrib-python pytorch torchvision 
-```
-
-- Se der erro de cv2 tenta instalar novamente o opencv
-
-```
-sudo pip install opencv-contrib-python
-```
-
-- Se der erro no pytorch, tenta seguir estas orientações aqui (instalar usando WHEEL):
-https://qengineering.eu/install-pytorch-on-raspberry-pi-4.html. Também coloquei os comandos no script install_torch.sh
-
-```
-./install_torch.sh
-```
-
-
-- Se der erro no numpy com um warning onde aparece um número hexadecimal (E.g.: 0x10), busque neste site o mapa de conversão para saber que versão do numpy deve ser instalada. No meu caso, o erro mostra 0x10 e pelo mapa eu vi que tinha que instalar o numpy 1.23
-
-```
-sudo pip install numpy=1.23
-```
-
-
-### Para instalar o seu programa em python na raspberry
-
-- Depois de montar o microSD na sua máquina copie os programas para dentro dele
-- O microSD será montado em uma pasta chamada /media/NOME_USUARIO/ (onde NOME_USUARIO depende da sua instalação específica ... geralmente é o seu nome de login)
-- Dentro desta pasta haverá uma chamada rootfs. É nesta que fica todo o sistema de arquivos que te interessa, incluindo a pasta "home".
-- Copie todo o conteúdo de raspberry_camera para home/NOME_USUARIO_RASPBERRY (o padrão é "pi"). Exemplo aqui na minha máquina (meu usuário é pistori e no raspberry eu havia criado um usuário chamado papi):
-
-```
-sudo cp -R raspberry_camera/ /media/pistori/rootfs/home/papi/
-```
-
-- Altere o arquivo /home/NOME_USUARIO_RASPBERRY/.bashrc para chamar o seu programa. Coloque os comandos abaixo bem no final do arquivo .bashrc  (troque papi pelo nome correto da pasta)
-  
-```
-cd /home/papi/raspberry_camera/
-# Tem que esperar alguns segundos para que a conexão com a rede se estabeleça.
-# Caso contrário, não vai ter IP para poder falar. 
-sleep 6
-# Vai falar o IP da máquina, caso tenha conseguido conectar
-# em alguma rede. Com isso, dá para logar no raspberry
-# via ssh
-./fala_IP.sh
-# Roda a IA processamento 1 a cada 30 quadros
-python ia.py 30 > saida.txt 2> saida_erro.txt &
-cd ~
-```
-
-### Dicas adicionais
-- Para logar na rede wifi da UCDB, que usa um protocolo de segurança WPA2 diferente do padrão das redes domésticas, usei estas orientações aqui: https://gist.github.com/davidhoness/5ee50e881b63c7944c25b8de33453823
-- Para alterar login altere o arquivo (no microSD) /etc/wpa_supplicant/wpa_supplicant.conf
-- Para alterar a senha, neste mesmo arquivo, você precisa primeiro gerar uma chave hash,
-  por segurança, usando os comandos abaixo (e copiar para o arquivo wpa_supplicant.conf os
-  números gerados, coloque depois de "hash:"
-```  
-  echo -n sua_senha | iconv -t utf16le | openssl md4
-  # Para reconfigurar a rede:
-  wpa_cli -i wlan0 reconfigure
-  # Para limpar sua senha do histórico
-  history -c
-  rm ~/.bash_history
-```
-  
-- Para testar a webcam USB eu usei estas dicas aqui:
-  https://raspberrypi-guide.github.io/electronics/using-usb-webcams
-  
-
-
-
- 
 
