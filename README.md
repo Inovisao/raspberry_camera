@@ -1,7 +1,6 @@
 # Como utilizar a raspberry 5
 
-* Instalar o RPI-Imager;
-no terminal use o comando 
+Instale o RPI-Imager no terminal, para isso use o comando: 
 
 ```bash 
 sudo apt install rpi-imager
