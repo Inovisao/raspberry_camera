@@ -10,7 +10,7 @@ sudo apt install rpi-imager
 
 * Executar no Terminal:
 ```bash 
-sudo rpi-imager
+sudo snap install rpi-imager
 ```
 Selecione o S.O próprio da raspberry de 64bits, escolha aonde o cartão SD na aba storage e então clique em "Write";
 Após a instalação, retire o cartão SD da máquina e insira-o no slot da raspberry(normalmente localizado na parte inferior da placa).
